@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation AI Assistant</title>
+    <meta name="description" content="Real-time AI-powered negotiation assistant with live transcription and analysis">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header__brand">
+                <span class="header__icon">🎯</span>
+                <h1 class="header__title">Negotiation AI Assistant</h1>
+            </div>
+            <div class="header__controls">
+                <div class="speaker-toggle">
+                    <button class="speaker-btn speaker-btn--you active" id="speakerYouBtn">You</button>
+                    <button class="speaker-btn speaker-btn--them" id="speakerThemBtn">Them</button>
+                </div>
+                <button class="btn btn--record" id="startRecordBtn">
+                    <span class="record-icon">●</span> Start Recording
+                </button>
+                <button class="btn btn--stop hidden" id="stopRecordBtn">
+                    <span class="stop-icon">■</span> Stop Recording
+                </button>
+                <button class="btn btn--calibrate" id="calibrateBtn" title="Click when YOU are speaking">
+                    🎯 I'm Speaking
+                </button>
+            </div>
+            <div class="header__session">
+                <span class="session-timer" id="sessionTimer">00:00:00</span>
+                <span class="session-divider">|</span>
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span class="status-text" id="statusText">Ready</span>
+            </div>
+            <div class="header__parties">
+                <span class="party party--you">You (Seller)</span>
+                <span class="party-vs">vs</span>
+                <span class="party party--them">Buyer</span>
+            </div>
+        </header>
+
+        <!-- Main 3-Column Layout -->
+        <main class="main">
+            <!-- Column 1: Live Transcription -->
+            <section class="panel panel--transcript">
+                <div class="panel__header">
+                    <h2 class="panel__title">
+                        <span class="panel__icon">📝</span>
+                        Live Transcription
+                    </h2>
+                    <div class="panel__actions">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="autoScrollToggle" checked>
+                            <span>Auto-scroll</span>
+                        </label>
+                        <button class="btn btn--icon" id="exportTranscriptBtn" title="Export transcript">📥</button>
+                    </div>
+                </div>
+                <div class="panel__content" id="transcriptPanel">
+                    <div class="empty-state" id="transcriptEmpty">
+                        <div class="empty-state__icon">🎤</div>
+                        <div class="empty-state__text">Waiting for speech...</div>
+                        <div class="empty-state__subtext">Conversation will appear here with speaker labels</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Column 2: AI Analysis & Suggestions -->
+            <section class="panel panel--analysis">
+                <div class="panel__header">
+                    <h2 class="panel__title">
+                        <span class="panel__icon">🤖</span>
+                        AI Analysis & Suggestions
+                    </h2>
+                    <span class="last-updated" id="analysisLastUpdated"></span>
+                </div>
+                <div class="panel__content" id="analysisPanel">
+                    <!-- Suggested Questions Section -->
+                    <div class="analysis-section">
+                        <h3 class="analysis-section__title">
+                            <span>💡</span> Suggested Questions
+                        </h3>
+                        <div class="suggestions-list" id="suggestionsList">
+                            <div class="empty-state empty-state--small">
+                                <div class="empty-state__text">Questions will appear as patterns are detected</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Insights Section -->
+                    <div class="analysis-section">
+                        <h3 class="analysis-section__title">
+                            <span>📊</span> Current Insights
+                        </h3>
+                        <div class="insights-list" id="insightsList">
+                            <div class="empty-state empty-state--small">
+                                <div class="empty-state__text">Insights will appear during negotiation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warnings Section -->
+                    <div class="analysis-section">
+                        <h3 class="analysis-section__title">
+                            <span>⚠️</span> Warnings
+                        </h3>
+                        <div class="warnings-list" id="warningsList">
+                            <div class="empty-state empty-state--small">
+                                <div class="empty-state__text">No warnings</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Format Insights Gathered Section -->
+                    <div class="analysis-section analysis-section--insights">
+                        <h3 class="analysis-section__title">
+                            <span>📝</span> Format Insights Gathered
+                        </h3>
+                        <div class="format-insights-list" id="formatInsightsList">
+                            <div class="empty-state empty-state--small">
+                                <div class="empty-state__text">Format suggestions will appear here</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Column 3: Live Formattings -->
+            <section class="panel panel--formats">
+                <div class="panel__header">
+                    <h2 class="panel__title">
+                        <span class="panel__icon">📋</span>
+                        Live Formattings
+                    </h2>
+                </div>
+
+                <!-- Sheet Tabs -->
+                <div class="sheet-tabs">
+                    <button class="sheet-tab sheet-tab--active" data-sheet="1">
+                        <span class="sheet-tab__number">1</span>
+                        <span class="sheet-tab__label">Distributive</span>
+                    </button>
+                    <button class="sheet-tab" data-sheet="2">
+                        <span class="sheet-tab__number">2</span>
+                        <span class="sheet-tab__label">Proposals</span>
+                    </button>
+                    <button class="sheet-tab" data-sheet="3">
+                        <span class="sheet-tab__number">3</span>
+                        <span class="sheet-tab__label">Trade-offs</span>
+                    </button>
+                    <button class="sheet-tab" data-sheet="4">
+                        <span class="sheet-tab__number">4</span>
+                        <span class="sheet-tab__label">Fisher</span>
+                    </button>
+                </div>
+
+                <div class="panel__content" id="formatsPanel">
+                    <!-- Sheet 1: Distributive Analysis -->
+                    <div class="sheet-view sheet-view--active" id="sheet1View">
+                        <h3 class="sheet-title">Distributive Analysis</h3>
+                        <table class="format-table">
+                            <thead>
+                                <tr>
+                                    <th>Variable</th>
+                                    <th class="col-you">You</th>
+                                    <th class="col-them">Them</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sheet1Body">
+                                <tr>
+                                    <td class="var-name">Initial Proposal</td>
+                                    <td class="col-you" data-field="you.initialProposal">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                    <td class="col-them" data-field="them.initialProposal">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="var-name">Target Point</td>
+                                    <td class="col-you" data-field="you.targetPoint">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                    <td class="col-them" data-field="them.targetPoint">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="var-name">Resistance Point</td>
+                                    <td class="col-you" data-field="you.resistancePoint">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                    <td class="col-them" data-field="them.resistancePoint">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                </tr>
+                                <tr class="row-highlight">
+                                    <td class="var-name">ZOPA</td>
+                                    <td colspan="2" class="zopa-cell" id="zopaDisplay">
+                                        <span class="value-placeholder">Calculating...</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="var-name">BATNA</td>
+                                    <td class="col-you" data-field="you.batna">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                    <td class="col-them" data-field="them.batna">
+                                        <span class="value-placeholder">?</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="sheet-legend">
+                            <span class="legend-item"><span class="indicator indicator--updated"></span> Just updated</span>
+                            <span class="legend-item"><span class="value-placeholder">?</span> = Unknown</span>
+                        </div>
+                    </div>
+
+                    <!-- Sheet 2: Proposal Tracker (P. Brown) -->
+                    <div class="sheet-view" id="sheet2View">
+                        <h3 class="sheet-title">Proposal Tracker (P. Brown)</h3>
+                        <div class="proposals-info">
+                            <span>Proposals: <strong id="proposalCount">0</strong></span>
+                            <span>Variables: <strong id="variableCount">0</strong></span>
+                            <span class="legend-inline"><span class="agreed-indicator"></span> Agreed</span>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="format-table format-table--proposals">
+                                <thead id="sheet2Head">
+                                    <tr>
+                                        <th class="sticky-col">Variable</th>
+                                        <th>Ideal</th>
+                                        <!-- Proposal columns will be added dynamically -->
+                                    </tr>
+                                </thead>
+                                <tbody id="sheet2Body">
+                                    <tr class="empty-row">
+                                        <td colspan="3">Variables will appear as proposals are made</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="sheet-legend">
+                            <span class="legend-item"><span class="dynamic-badge">+</span> Dynamic variable</span>
+                            <span class="legend-item"><span class="agreed-indicator"></span> Agreed (unchanged)</span>
+                        </div>
+                    </div>
+
+                    <!-- Sheet 3: Trade-off Analysis -->
+                    <div class="sheet-view" id="sheet3View">
+                        <h3 class="sheet-title">Trade-off Analysis</h3>
+                        <table class="format-table format-table--tradeoff">
+                            <thead>
+                                <tr>
+                                    <th colspan="3" class="col-you">You (Seller)</th>
+                                    <th>Variable</th>
+                                    <th colspan="2" class="col-them">Them (Buyer)</th>
+                                </tr>
+                                <tr class="subheader">
+                                    <th class="col-you">Start</th>
+                                    <th class="col-you">Margin</th>
+                                    <th class="col-you">Impact</th>
+                                    <th></th>
+                                    <th class="col-them">Impact</th>
+                                    <th class="col-them">Margin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sheet3Body">
+                                <tr class="empty-row">
+                                    <td colspan="6">Trade-off data will appear as negotiation progresses</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="tradeoff-suggestion" id="tradeoffSuggestion">
+                            <!-- AI-generated trade-off suggestions will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Sheet 4: Fisher Integrative Model -->
+                    <div class="sheet-view" id="sheet4View">
+                        <h3 class="sheet-title">Integrative Analysis (Fisher)</h3>
+
+                        <div class="fisher-section">
+                            <h4 class="fisher-section__title">Problem</h4>
+                            <div class="fisher-content" id="fisherProblem">
+                                <span class="value-placeholder">Problem statement will be detected...</span>
+                            </div>
+                        </div>
+
+                        <div class="fisher-section">
+                            <h4 class="fisher-section__title">Actors</h4>
+                            <ul class="fisher-list" id="fisherActors">
+                                <li class="value-placeholder">Actors will be identified...</li>
+                            </ul>
+                        </div>
+
+                        <div class="fisher-columns">
+                            <div class="fisher-column">
+                                <h4 class="fisher-section__title col-you">Your Interests</h4>
+                                <ul class="fisher-list" id="fisherYourInterests">
+                                    <li class="value-placeholder">Interests will be detected...</li>
+                                </ul>
+                            </div>
+                            <div class="fisher-column">
+                                <h4 class="fisher-section__title col-them">Their Interests</h4>
+                                <ul class="fisher-list" id="fisherTheirInterests">
+                                    <li class="value-placeholder">Interests will be detected...</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="fisher-section">
+                            <h4 class="fisher-section__title">Options (Brainstormed)</h4>
+                            <ol class="fisher-list fisher-list--numbered" id="fisherOptions">
+                                <li class="value-placeholder">Options will appear...</li>
+                            </ol>
+                        </div>
+
+                        <div class="fisher-section">
+                            <h4 class="fisher-section__title">Objective Criteria</h4>
+                            <ul class="fisher-list" id="fisherCriteria">
+                                <li class="value-placeholder">Criteria will be detected...</li>
+                            </ul>
+                        </div>
+
+                        <div class="fisher-columns">
+                            <div class="fisher-column">
+                                <h4 class="fisher-section__title col-you">Your BATNA</h4>
+                                <div class="batna-box" id="fisherYourBatna">
+                                    <span class="value-placeholder">Not yet identified</span>
+                                </div>
+                            </div>
+                            <div class="fisher-column">
+                                <h4 class="fisher-section__title col-them">Their BATNA</h4>
+                                <div class="batna-box" id="fisherTheirBatna">
+                                    <span class="value-placeholder">Unknown - probe for this</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="manual-input">
+                <input type="text" class="manual-input__field" id="manualInput"
+                    placeholder="Type or paste text to analyze manually..." autocomplete="off">
+                <button class="btn btn--primary" id="analyzeBtn">Analyze</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
