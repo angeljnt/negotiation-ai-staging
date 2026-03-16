@@ -5,7 +5,1383 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Negotiation AI Assistant</title>
     <meta name="description" content="Real-time AI-powered negotiation assistant with live transcription and analysis">
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+/**
+ * Negotiation AI Assistant - Styles
+ * 3-Column Layout with Live Transcription, AI Analysis, and Format Tracking
+ */
+
+/* ==========================================================================
+   CSS Custom Properties (Theme)
+   ========================================================================== */
+
+:root {
+    /* Colors - Dark Theme */
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-tertiary: #334155;
+    --color-bg-elevated: rgba(255, 255, 255, 0.05);
+
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+
+    /* Party colors */
+    --color-you: #3b82f6;
+    --color-you-bg: rgba(59, 130, 246, 0.15);
+    --color-them: #6b7280;
+    --color-them-bg: rgba(107, 114, 128, 0.15);
+
+    /* Accent colors */
+    --color-accent-primary: #3b82f6;
+    --color-accent-secondary: #8b5cf6;
+    --color-accent-success: #10b981;
+    --color-accent-warning: #f59e0b;
+    --color-accent-danger: #ef4444;
+
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-focus: var(--color-accent-primary);
+
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 350ms ease;
+
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+}
+
+/* ==========================================================================
+   Reset & Base
+   ========================================================================== */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    background: linear-gradient(135deg, var(--color-bg-primary) 0%, #1a1a2e 100%);
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   App Layout
+   ========================================================================== */
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: var(--space-md);
+    gap: var(--space-md);
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.header__icon {
+    font-size: var(--text-2xl);
+}
+
+.header__title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.header__session {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-full);
+}
+
+.session-timer {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-accent-success);
+}
+
+.session-divider {
+    color: var(--color-text-muted);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    transition: background var(--transition-normal);
+}
+
+.status-indicator.connected {
+    background: var(--color-accent-success);
+}
+
+.status-indicator.listening {
+    background: var(--color-accent-warning);
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.error {
+    background: var(--color-accent-danger);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.status-text {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.header__parties {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.party {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.party--you {
+    background: var(--color-you-bg);
+    color: var(--color-you);
+}
+
+.party--them {
+    background: var(--color-them-bg);
+    color: var(--color-them);
+}
+
+.party-vs {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* Recording Controls */
+.header__controls {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.btn--record {
+    background: var(--color-accent-danger);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.btn--record:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.btn--record .record-icon {
+    font-size: 10px;
+    animation: recordPulse 1.5s infinite;
+}
+
+@keyframes recordPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.btn--stop {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.btn--stop:hover:not(:disabled) {
+    background: var(--color-accent-danger);
+}
+
+.btn--stop .stop-icon {
+    font-size: 10px;
+}
+
+.btn--recording {
+    background: var(--color-accent-danger);
+    animation: recordingPulse 1s infinite;
+}
+
+@keyframes recordingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+/* Speaker Toggle */
+.speaker-toggle {
+    display: flex;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.speaker-btn {
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.speaker-btn:hover {
+    color: var(--color-text-secondary);
+}
+
+.speaker-btn.active {
+    color: white;
+}
+
+.speaker-btn--you.active {
+    background: var(--color-accent-success);
+}
+
+.speaker-btn--them.active {
+    background: var(--color-accent-secondary);
+}
+
+/* Calibrate Button */
+.btn--calibrate {
+    background: var(--color-accent-secondary);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.btn--calibrate:hover:not(:disabled) {
+    background: #7c3aed;
+}
+
+/* ==========================================================================
+   Main 3-Column Layout
+   ========================================================================== */
+
+.main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 30% 30% 40%;
+    gap: var(--space-md);
+    min-height: 0;
+}
+
+@media (max-width: 1400px) {
+    .main {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 1000px) {
+    .main {
+        grid-template-columns: 1fr 1fr;
+    }
+    .panel--formats {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
+    .panel--formats {
+        grid-column: span 1;
+    }
+}
+
+/* ==========================================================================
+   Panels
+   ========================================================================== */
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.panel__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.panel__icon {
+    font-size: var(--text-lg);
+}
+
+.panel__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.panel__content {
+    flex: 1;
+    padding: var(--space-md);
+    overflow-y: auto;
+    min-height: 300px;
+}
+
+/* Toggle label */
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.toggle-label input {
+    accent-color: var(--color-accent-primary);
+}
+
+.last-updated {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 150px;
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.empty-state--small {
+    min-height: 60px;
+    padding: var(--space-md);
+}
+
+.empty-state__icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.empty-state__text {
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.empty-state__subtext {
+    font-size: var(--text-xs);
+    opacity: 0.7;
+    margin-top: var(--space-xs);
+}
+
+/* ==========================================================================
+   Transcript Entries
+   ========================================================================== */
+
+.transcript-entry {
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+    animation: fadeIn var(--transition-normal);
+}
+
+.transcript-entry:last-child {
+    border-bottom: none;
+}
+
+.transcript-entry__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+}
+
+.transcript-entry__time {
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+}
+
+.transcript-entry__speaker {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.transcript-entry__speaker--you {
+    background: var(--color-you-bg);
+    color: var(--color-you);
+}
+
+.transcript-entry__speaker--them {
+    background: var(--color-them-bg);
+    color: var(--color-them);
+}
+
+.transcript-entry__text {
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
+.transcript-entry--highlighted {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid var(--color-accent-warning);
+    margin-left: -var(--space-md);
+    padding-left: var(--space-md);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Analysis Panel Sections
+   ========================================================================== */
+
+.analysis-section {
+    margin-bottom: var(--space-lg);
+}
+
+.analysis-section:last-child {
+    margin-bottom: 0;
+}
+
+.analysis-section__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* Suggested Questions */
+.suggestion-item {
+    background: var(--color-you-bg);
+    border-left: 3px solid var(--color-you);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    animation: slideIn var(--transition-normal);
+}
+
+.suggestion-item__question {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.suggestion-item__purpose {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Insights */
+.insight-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    background: rgba(59, 130, 246, 0.1);
+    border-left: 3px solid var(--color-accent-primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    animation: slideIn var(--transition-normal);
+}
+
+.insight-item--streaming {
+    border-left-color: var(--color-accent-warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.insight-item--streaming .insight-item__content {
+    min-height: 40px;
+}
+
+.insight-item--streaming .insight-item__content::after {
+    content: '▋';
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.insight-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xs);
+}
+
+.insight-item__pattern {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-accent-primary);
+}
+
+.insight-item--streaming .insight-item__pattern {
+    color: var(--color-accent-warning);
+}
+
+.insight-item__speaker {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.insight-item__content {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* Warnings */
+.warning-item {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid var(--color-accent-danger);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-sm);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: var(--text-sm);
+}
+
+.warning-item--moderate {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: var(--color-accent-warning);
+}
+
+/* Format Insights Section */
+.analysis-section--insights {
+    border-top: 2px solid var(--color-accent-secondary);
+    padding-top: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.format-insight-item {
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    animation: slideIn var(--transition-normal);
+}
+
+.format-insight-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+}
+
+.format-insight-item__type {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-accent-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.format-insight-item__sheet {
+    font-size: var(--text-xs);
+    background: var(--color-bg-tertiary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+}
+
+.format-insight-item__formats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+}
+
+.format-insight-item__formats-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.format-insight-item__format {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xs);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.format-insight-item__format:hover {
+    background: var(--color-accent-primary);
+    border-color: var(--color-accent-primary);
+    color: white;
+}
+
+.format-insight-item__format-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: var(--color-accent-secondary);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.format-insight-item__format[data-sheet="1"] .format-insight-item__format-num {
+    background: #3b82f6;
+}
+
+.format-insight-item__format[data-sheet="2"] .format-insight-item__format-num {
+    background: #8b5cf6;
+}
+
+.format-insight-item__format[data-sheet="3"] .format-insight-item__format-num {
+    background: #f59e0b;
+}
+
+.format-insight-item__format[data-sheet="4"] .format-insight-item__format-num {
+    background: #10b981;
+}
+
+.format-insight-item__content {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-md);
+    line-height: 1.5;
+}
+
+.format-insight-item__field {
+    font-weight: 600;
+    color: var(--color-accent-primary);
+}
+
+.format-insight-item__value {
+    font-family: var(--font-mono);
+    background: var(--color-bg-secondary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.format-insight-item__actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.btn--accept {
+    background: var(--color-accent-success);
+    color: white;
+    font-size: var(--text-xs);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+.btn--accept:hover:not(:disabled) {
+    background: #059669;
+}
+
+.btn--reject {
+    background: var(--color-accent-danger);
+    color: white;
+    font-size: var(--text-xs);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+.btn--reject:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.btn--comment {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+    padding: var(--space-xs) var(--space-sm);
+}
+
+.btn--comment:hover:not(:disabled) {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.format-insight-item__comment-box {
+    margin-top: var(--space-sm);
+    display: none;
+}
+
+.format-insight-item__comment-box.visible {
+    display: block;
+}
+
+.format-insight-item__comment-input {
+    width: 100%;
+    padding: var(--space-sm);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    resize: vertical;
+    min-height: 60px;
+}
+
+.format-insight-item__comment-input:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+}
+
+.format-insight-item__comment-submit {
+    margin-top: var(--space-xs);
+    font-size: var(--text-xs);
+}
+
+/* ==========================================================================
+   Sheet Tabs
+   ========================================================================== */
+
+.sheet-tabs {
+    display: flex;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sheet-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.sheet-tab:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+}
+
+.sheet-tab--active {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.sheet-tab__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+}
+
+.sheet-tab--active .sheet-tab__number {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.sheet-tab__label {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .sheet-tab__label {
+        display: inline;
+    }
+}
+
+/* ==========================================================================
+   Sheet Views
+   ========================================================================== */
+
+.sheet-view {
+    display: none;
+}
+
+.sheet-view--active {
+    display: block;
+    animation: fadeIn var(--transition-normal);
+}
+
+.sheet-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+/* ==========================================================================
+   Format Tables
+   ========================================================================== */
+
+.format-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+.format-table th,
+.format-table td {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    border: 1px solid var(--color-border);
+}
+
+.format-table th {
+    background: var(--color-bg-secondary);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.format-table .col-you {
+    background: var(--color-you-bg);
+    color: var(--color-you);
+}
+
+.format-table .col-them {
+    background: var(--color-them-bg);
+    color: var(--color-them);
+}
+
+.format-table .var-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.format-table .row-highlight {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.value-placeholder {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.value-updated {
+    animation: valueFlash 2s ease-out;
+}
+
+@keyframes valueFlash {
+    0% { background: rgba(16, 185, 129, 0.4); }
+    100% { background: transparent; }
+}
+
+.zopa-cell {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Sheet Legend */
+.sheet-legend {
+    display: flex;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.indicator--updated {
+    background: var(--color-accent-success);
+}
+
+.dynamic-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: var(--color-accent-secondary);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   Sheet 2: Proposal Tracker Table
+   ========================================================================== */
+
+.proposals-info {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    align-items: center;
+}
+
+.proposals-info strong {
+    color: var(--color-accent-primary);
+}
+
+.legend-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.agreed-indicator {
+    width: 12px;
+    height: 12px;
+    background: var(--color-accent-success);
+    border-radius: var(--radius-sm);
+}
+
+/* Agreed cell styling */
+.cell-agreed {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: var(--color-accent-success) !important;
+    font-weight: 600;
+}
+
+.cell-agreed::after {
+    content: ' ✓';
+    font-size: 10px;
+}
+
+/* Proposal column headers */
+.proposal-header {
+    text-align: center;
+}
+
+.proposal-header__number {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.proposal-header__party {
+    font-size: 10px;
+    display: block;
+    margin-top: 2px;
+}
+
+.proposal-header__party--you {
+    color: var(--color-you);
+}
+
+.proposal-header__party--them {
+    color: var(--color-them);
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.format-table--rounds .sticky-col {
+    position: sticky;
+    left: 0;
+    background: var(--color-bg-secondary);
+    z-index: 1;
+}
+
+.format-table .subheader th {
+    font-size: 10px;
+    padding: var(--space-xs) var(--space-md);
+}
+
+.empty-row td {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding: var(--space-lg);
+}
+
+/* ==========================================================================
+   Sheet 3: Trade-off Table
+   ========================================================================== */
+
+.format-table--tradeoff {
+    text-align: center;
+}
+
+.format-table--tradeoff .var-name {
+    text-align: center;
+    background: var(--color-bg-tertiary);
+}
+
+.impact-bar {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+}
+
+.impact-bar__segment {
+    width: 12px;
+    height: 8px;
+    background: var(--color-bg-tertiary);
+    border-radius: 2px;
+}
+
+.impact-bar__segment--filled {
+    background: var(--color-accent-primary);
+}
+
+.impact-bar__segment--filled.col-them {
+    background: var(--color-them);
+}
+
+.tradeoff-suggestion {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.tradeoff-suggestion:empty {
+    display: none;
+}
+
+/* ==========================================================================
+   Sheet 4: Fisher Model
+   ========================================================================== */
+
+.fisher-section {
+    margin-bottom: var(--space-lg);
+}
+
+.fisher-section__title {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.fisher-section__title.col-you {
+    border-bottom-color: var(--color-you);
+}
+
+.fisher-section__title.col-them {
+    border-bottom-color: var(--color-them);
+}
+
+.fisher-content {
+    padding: var(--space-sm);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+}
+
+.fisher-list {
+    list-style: none;
+    padding: 0;
+}
+
+.fisher-list li {
+    padding: var(--space-xs) 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+}
+
+.fisher-list li::before {
+    content: '•';
+    color: var(--color-accent-primary);
+    margin-right: var(--space-sm);
+}
+
+.fisher-list--numbered {
+    counter-reset: fisher-counter;
+}
+
+.fisher-list--numbered li::before {
+    counter-increment: fisher-counter;
+    content: counter(fisher-counter) '.';
+    font-weight: 600;
+}
+
+.fisher-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.batna-box {
+    padding: var(--space-md);
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm) var(--space-md);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn--primary {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.btn--primary:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.btn--icon {
+    padding: var(--space-sm);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+}
+
+.btn--icon:hover:not(:disabled) {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.footer {
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.manual-input {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.manual-input__field {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    font-family: inherit;
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast);
+}
+
+.manual-input__field::placeholder {
+    color: var(--color-text-muted);
+}
+
+.manual-input__field:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+}
+
+/* ==========================================================================
+   Scrollbar
+   ========================================================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.hidden {
+    display: none !important;
+}
+
+    </style>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 </head>
 <body>
@@ -358,6 +1734,1444 @@
         </footer>
     </div>
 
-    <script src="js/app.js"></script>
+    <script>
+/**
+ * Negotiation AI Assistant - Frontend Application
+ * 3-Column Layout with Live Transcription, AI Analysis, and Format Tracking
+ */
+
+'use strict';
+
+/**
+ * Configuration
+ */
+const CONFIG = {
+    websocketUrl: 'ws://localhost:8765',
+    reconnectDelay: 3000,
+    maxTranscriptEntries: 100,
+    updateAnimationDuration: 2000,
+};
+
+/**
+ * Pattern Detection for triggering AI analysis
+ */
+const PATTERNS = {
+    number: {
+        regex: /\$?\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:percent|%|dollars?|k|thousand|million|billion))?/i,
+        promptKey: 'number_analysis'
+    },
+    proposal: {
+        keywords: ['propose', 'offer', 'suggest', 'how about', 'what if', 'consider', 'would you', 'could we', "let's"],
+        promptKey: 'proposal_analysis'
+    },
+    objection: {
+        keywords: ["can't", "won't", 'cannot', 'problem', 'issue', 'concern', 'difficult', 'impossible', 'too high', 'too low', 'too much', 'too expensive', 'no way', 'not possible'],
+        promptKey: 'objection_handler'
+    },
+    question: {
+        regex: /\?$/,
+        promptKey: 'question_analysis'
+    },
+    agreement: {
+        keywords: ['agree', 'sounds good', 'deal', 'works for me', 'accept', 'yes', 'okay', 'fine', 'fair enough'],
+        promptKey: 'agreement_analysis'
+    }
+};
+
+/**
+ * Initial State Structure
+ */
+const createInitialState = () => ({
+    session: {
+        startTime: null,
+        status: 'disconnected',
+        isRecording: false,
+        currentSpeaker: 'you', // 'you' or 'them'
+    },
+    transcript: [],
+    analysis: {
+        suggestions: [],
+        insights: [],
+        warnings: [],
+        formatInsights: [],
+        lastUpdated: null,
+    },
+    formats: {
+        sheet1: {
+            you: {
+                initialProposal: null,
+                targetPoint: null,
+                resistancePoint: null,
+                batna: null,
+            },
+            them: {
+                initialProposal: null,
+                targetPoint: null,
+                resistancePoint: null,
+                batna: null,
+            },
+            zopa: { exists: null, range: null },
+        },
+        sheet2: {
+            variables: [],
+            proposals: [], // Each proposal: { id, party, timestamp, values: { variable: value } }
+        },
+        sheet3: {
+            variables: [],
+        },
+        sheet4: {
+            problem: null,
+            actors: [],
+            interests: { you: [], them: [] },
+            options: [],
+            criteria: [],
+            batna: { you: null, them: null },
+        },
+    },
+    ui: {
+        activeSheet: 1,
+        autoScroll: true,
+    },
+});
+
+/**
+ * Main Application Class
+ */
+class NegotiationAI {
+    constructor() {
+        this.ws = null;
+        this.reconnectTimer = null;
+        this.sessionTimer = null;
+        this.recognition = null; // Web Speech API
+        this.state = createInitialState();
+
+        // Cache DOM elements
+        this.elements = {
+            // Header
+            sessionTimer: document.getElementById('sessionTimer'),
+            statusIndicator: document.getElementById('statusIndicator'),
+            statusText: document.getElementById('statusText'),
+            startRecordBtn: document.getElementById('startRecordBtn'),
+            stopRecordBtn: document.getElementById('stopRecordBtn'),
+            speakerYouBtn: document.getElementById('speakerYouBtn'),
+            speakerThemBtn: document.getElementById('speakerThemBtn'),
+            calibrateBtn: document.getElementById('calibrateBtn'),
+
+            // Transcript
+            transcriptPanel: document.getElementById('transcriptPanel'),
+            transcriptEmpty: document.getElementById('transcriptEmpty'),
+            autoScrollToggle: document.getElementById('autoScrollToggle'),
+            exportTranscriptBtn: document.getElementById('exportTranscriptBtn'),
+
+            // Analysis
+            analysisLastUpdated: document.getElementById('analysisLastUpdated'),
+            suggestionsList: document.getElementById('suggestionsList'),
+            insightsList: document.getElementById('insightsList'),
+            warningsList: document.getElementById('warningsList'),
+            formatInsightsList: document.getElementById('formatInsightsList'),
+
+            // Formats
+            sheetTabs: document.querySelectorAll('.sheet-tab'),
+            sheetViews: {
+                1: document.getElementById('sheet1View'),
+                2: document.getElementById('sheet2View'),
+                3: document.getElementById('sheet3View'),
+                4: document.getElementById('sheet4View'),
+            },
+
+            // Sheet 1
+            sheet1Body: document.getElementById('sheet1Body'),
+            zopaDisplay: document.getElementById('zopaDisplay'),
+
+            // Sheet 2
+            sheet2Head: document.getElementById('sheet2Head'),
+            sheet2Body: document.getElementById('sheet2Body'),
+            proposalCount: document.getElementById('proposalCount'),
+            variableCount: document.getElementById('variableCount'),
+
+            // Sheet 3
+            sheet3Body: document.getElementById('sheet3Body'),
+            tradeoffSuggestion: document.getElementById('tradeoffSuggestion'),
+
+            // Sheet 4
+            fisherProblem: document.getElementById('fisherProblem'),
+            fisherActors: document.getElementById('fisherActors'),
+            fisherYourInterests: document.getElementById('fisherYourInterests'),
+            fisherTheirInterests: document.getElementById('fisherTheirInterests'),
+            fisherOptions: document.getElementById('fisherOptions'),
+            fisherCriteria: document.getElementById('fisherCriteria'),
+            fisherYourBatna: document.getElementById('fisherYourBatna'),
+            fisherTheirBatna: document.getElementById('fisherTheirBatna'),
+
+            // Footer
+            manualInput: document.getElementById('manualInput'),
+            analyzeBtn: document.getElementById('analyzeBtn'),
+        };
+
+        this.bindEvents();
+        this.initSpeechRecognition();
+        this.connect();
+        this.loadDemoData(); // Load demo data to show the UI
+    }
+
+    /**
+     * Initialize Web Speech API for voice recognition
+     */
+    initSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.warn('Speech Recognition not supported. Use Chrome.');
+            return;
+        }
+
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = true;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'en-US';
+
+        this.recognition.onresult = (event) => {
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    const text = event.results[i][0].transcript.trim();
+                    if (text) {
+                        this.processVoiceInput(text);
+                    }
+                }
+            }
+        };
+
+        this.recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            if (event.error === 'no-speech' && this.state.session.isRecording) {
+                // Restart on no-speech timeout
+                this.recognition.start();
+            }
+        };
+
+        this.recognition.onend = () => {
+            // Restart if still recording
+            if (this.state.session.isRecording) {
+                this.recognition.start();
+            }
+        };
+    }
+
+    /**
+     * Process voice input - detect patterns and trigger analysis
+     */
+    processVoiceInput(text) {
+        const speaker = this.state.session.currentSpeaker;
+        const speakerLabel = speaker === 'you' ? 'You (Seller)' : 'Buyer';
+
+        // Add to transcript
+        this.addTranscript({
+            id: Date.now().toString(),
+            timestamp: new Date().toLocaleTimeString(),
+            speaker: speaker,
+            speakerLabel: speakerLabel,
+            text: text,
+        });
+
+        // Send transcript to server
+        this.send({
+            type: 'transcript',
+            text: text,
+            speaker: speaker,
+        });
+
+        // Detect patterns and trigger analysis
+        const pattern = this.detectPattern(text);
+        if (pattern) {
+            this.send({
+                type: 'manual_analyze',
+                text: text,
+                speaker: speaker,
+                prompt_key: pattern.promptKey,
+            });
+        }
+    }
+
+    /**
+     * Detect negotiation patterns in text
+     */
+    detectPattern(text) {
+        const lower = text.toLowerCase();
+
+        for (const [name, config] of Object.entries(PATTERNS)) {
+            if (config.regex && config.regex.test(text)) {
+                return { name, ...config };
+            }
+            if (config.keywords) {
+                for (const kw of config.keywords) {
+                    if (lower.includes(kw)) {
+                        return { name, ...config };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Set current speaker
+     */
+    setSpeaker(speaker) {
+        this.state.session.currentSpeaker = speaker;
+
+        // Update UI
+        this.elements.speakerYouBtn.classList.toggle('active', speaker === 'you');
+        this.elements.speakerThemBtn.classList.toggle('active', speaker === 'them');
+
+        // Notify server
+        this.send({ type: 'set_speaker', speaker: speaker });
+    }
+
+    /**
+     * Calibrate - mark current speaker as "you"
+     */
+    calibrate() {
+        this.setSpeaker('you');
+        this.send({ type: 'calibrate' });
+    }
+
+    /**
+     * Bind event handlers
+     */
+    bindEvents() {
+        // Recording controls
+        this.elements.startRecordBtn.addEventListener('click', () => this.startRecording());
+        this.elements.stopRecordBtn.addEventListener('click', () => this.stopRecording());
+
+        // Speaker toggle
+        if (this.elements.speakerYouBtn) {
+            this.elements.speakerYouBtn.addEventListener('click', () => this.setSpeaker('you'));
+        }
+        if (this.elements.speakerThemBtn) {
+            this.elements.speakerThemBtn.addEventListener('click', () => this.setSpeaker('them'));
+        }
+        if (this.elements.calibrateBtn) {
+            this.elements.calibrateBtn.addEventListener('click', () => this.calibrate());
+        }
+
+        // Sheet tabs
+        this.elements.sheetTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const sheet = parseInt(tab.dataset.sheet);
+                this.switchSheet(sheet);
+            });
+        });
+
+        // Auto-scroll toggle
+        this.elements.autoScrollToggle.addEventListener('change', (e) => {
+            this.state.ui.autoScroll = e.target.checked;
+        });
+
+        // Export transcript
+        this.elements.exportTranscriptBtn.addEventListener('click', () => {
+            this.exportTranscript();
+        });
+
+        // Manual input
+        this.elements.analyzeBtn.addEventListener('click', () => this.handleManualAnalyze());
+        this.elements.manualInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleManualAnalyze();
+        });
+
+        // Reconnect on visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !this.isConnected()) {
+                this.connect();
+            }
+        });
+    }
+
+    /**
+     * Start Recording
+     */
+    startRecording() {
+        this.state.session.isRecording = true;
+        this.state.session.startTime = new Date();
+        this.elements.startRecordBtn.classList.add('hidden');
+        this.elements.stopRecordBtn.classList.remove('hidden');
+        this.setStatus('listening', 'Recording');
+        this.startSessionTimer();
+
+        // Start speech recognition
+        if (this.recognition) {
+            try {
+                this.recognition.start();
+                console.log('Speech recognition started');
+            } catch (e) {
+                console.warn('Speech recognition already started or error:', e);
+            }
+        }
+
+        // Send start recording command to server
+        this.send({ type: 'start_recording' });
+    }
+
+    /**
+     * Stop Recording
+     */
+    stopRecording() {
+        this.state.session.isRecording = false;
+        this.elements.stopRecordBtn.classList.add('hidden');
+        this.elements.startRecordBtn.classList.remove('hidden');
+        this.setStatus('connected', 'Stopped');
+
+        if (this.sessionTimer) {
+            clearInterval(this.sessionTimer);
+            this.sessionTimer = null;
+        }
+
+        // Stop speech recognition
+        if (this.recognition) {
+            this.recognition.stop();
+            console.log('Speech recognition stopped');
+        }
+
+        // Send stop recording command to server
+        this.send({ type: 'stop_recording' });
+    }
+
+    /**
+     * Switch active sheet
+     */
+    switchSheet(sheetNumber) {
+        this.state.ui.activeSheet = sheetNumber;
+
+        // Update tabs
+        this.elements.sheetTabs.forEach(tab => {
+            tab.classList.toggle('sheet-tab--active', parseInt(tab.dataset.sheet) === sheetNumber);
+        });
+
+        // Update views
+        Object.entries(this.elements.sheetViews).forEach(([num, view]) => {
+            view.classList.toggle('sheet-view--active', parseInt(num) === sheetNumber);
+        });
+    }
+
+    /**
+     * Start session timer
+     */
+    startSessionTimer() {
+        if (this.sessionTimer) {
+            clearInterval(this.sessionTimer);
+        }
+        this.sessionTimer = setInterval(() => {
+            if (!this.state.session.startTime) return;
+            const elapsed = Date.now() - this.state.session.startTime.getTime();
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            this.elements.sessionTimer.textContent =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    /**
+     * WebSocket Connection
+     */
+    connect() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) return;
+
+        this.setStatus('connecting', 'Connecting...');
+
+        try {
+            this.ws = new WebSocket(CONFIG.websocketUrl);
+            this.ws.onopen = () => this.handleOpen();
+            this.ws.onclose = () => this.handleClose();
+            this.ws.onerror = (e) => this.handleError(e);
+            this.ws.onmessage = (e) => this.handleMessage(e);
+        } catch (error) {
+            console.error('WebSocket connection error:', error);
+            this.scheduleReconnect();
+        }
+    }
+
+    handleOpen() {
+        console.log('Connected to server');
+        this.setStatus('listening', 'Recording');
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+    }
+
+    handleClose() {
+        console.log('Disconnected from server');
+        this.setStatus('error', 'Disconnected');
+        this.scheduleReconnect();
+    }
+
+    handleError(error) {
+        console.error('WebSocket error:', error);
+        this.setStatus('error', 'Connection error');
+    }
+
+    scheduleReconnect() {
+        if (this.reconnectTimer) return;
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = null;
+            this.connect();
+        }, CONFIG.reconnectDelay);
+    }
+
+    isConnected() {
+        return this.ws && this.ws.readyState === WebSocket.OPEN;
+    }
+
+    send(data) {
+        if (!this.isConnected()) return false;
+        try {
+            this.ws.send(JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error('Send error:', error);
+            return false;
+        }
+    }
+
+    setStatus(status, text) {
+        this.elements.statusIndicator.className = 'status-indicator ' + status;
+        this.elements.statusText.textContent = text;
+        this.state.session.status = status;
+    }
+
+    /**
+     * Handle incoming messages
+     */
+    handleMessage(event) {
+        try {
+            const data = JSON.parse(event.data);
+
+            switch (data.type) {
+                case 'TRANSCRIPT_UPDATE':
+                    this.addTranscript(data.segment);
+                    break;
+
+                case 'SHEET_UPDATE':
+                    this.updateSheet(data.sheet, data.field, data.value, data.party);
+                    break;
+
+                case 'AI_UPDATE':
+                    this.updateAnalysis(data.suggestions, data.insights, data.warnings, data.formatInsights);
+                    break;
+
+                case 'FORMAT_INSIGHT':
+                    this.addFormatInsight(data.insight);
+                    break;
+
+                case 'PROPOSAL':
+                    this.addProposal(data.party, data.values);
+                    break;
+
+                case 'VARIABLE_DISCOVERED':
+                    this.addVariable(data.variable, data.sheet);
+                    break;
+
+                case 'ROUND_STARTED':
+                    this.startNewRound(data.round);
+                    break;
+
+                case 'transcript':
+                    // Legacy format support
+                    this.addTranscript({
+                        id: Date.now().toString(),
+                        timestamp: new Date().toLocaleTimeString(),
+                        speaker: 'you',
+                        speakerLabel: 'You',
+                        text: data.text,
+                    });
+                    break;
+
+                // Real-time AI Analysis handlers
+                case 'analysis_start':
+                    this.startAnalysis(data.pattern, data.speaker);
+                    break;
+
+                case 'analysis_chunk':
+                    this.appendAnalysisChunk(data.chunk);
+                    break;
+
+                case 'analysis_complete':
+                    this.completeAnalysis(data.full_response);
+                    break;
+
+                case 'speaker_changed':
+                case 'calibrated':
+                case 'context_cleared':
+                case 'state':
+                    // Handle silently - UI already updated
+                    break;
+
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        } catch (error) {
+            console.error('Message handling error:', error);
+        }
+    }
+
+    /**
+     * Transcript Management
+     */
+    addTranscript(segment) {
+        this.state.transcript.push(segment);
+
+        // Hide empty state
+        this.elements.transcriptEmpty.classList.add('hidden');
+
+        // Create entry
+        const entry = document.createElement('div');
+        entry.className = 'transcript-entry';
+        entry.dataset.id = segment.id;
+
+        const speakerClass = segment.speaker === 'you' ? 'transcript-entry__speaker--you' : 'transcript-entry__speaker--them';
+
+        entry.innerHTML = `
+            <div class="transcript-entry__header">
+                <span class="transcript-entry__time">[${segment.timestamp}]</span>
+                <span class="transcript-entry__speaker ${speakerClass}">${segment.speakerLabel}</span>
+            </div>
+            <div class="transcript-entry__text">${this.escapeHtml(segment.text)}</div>
+        `;
+
+        this.elements.transcriptPanel.appendChild(entry);
+
+        // Limit entries
+        while (this.state.transcript.length > CONFIG.maxTranscriptEntries) {
+            this.state.transcript.shift();
+            const first = this.elements.transcriptPanel.querySelector('.transcript-entry');
+            if (first) first.remove();
+        }
+
+        // Auto-scroll
+        if (this.state.ui.autoScroll) {
+            this.elements.transcriptPanel.scrollTop = this.elements.transcriptPanel.scrollHeight;
+        }
+    }
+
+    /**
+     * Sheet Updates
+     */
+    updateSheet(sheet, field, value, party) {
+        switch (sheet) {
+            case 1:
+                this.updateSheet1(field, value, party);
+                break;
+            case 2:
+                this.updateSheet2(field, value, party);
+                break;
+            case 3:
+                this.updateSheet3(field, value, party);
+                break;
+            case 4:
+                this.updateSheet4(field, value);
+                break;
+        }
+    }
+
+    updateSheet1(field, value, party) {
+        // Update state
+        if (party && this.state.formats.sheet1[party]) {
+            this.state.formats.sheet1[party][field] = value;
+        }
+
+        // Update UI
+        const cell = this.elements.sheet1Body.querySelector(`[data-field="${party}.${field}"]`);
+        if (cell) {
+            cell.innerHTML = `<span class="value-updated">${value}</span>`;
+        }
+
+        // Recalculate ZOPA
+        this.calculateZOPA();
+    }
+
+    calculateZOPA() {
+        const { you, them } = this.state.formats.sheet1;
+
+        if (you.resistancePoint && them.resistancePoint) {
+            // Extract numeric values
+            const yourRP = this.extractNumber(you.resistancePoint);
+            const theirRP = this.extractNumber(them.resistancePoint);
+
+            if (yourRP !== null && theirRP !== null) {
+                if (yourRP <= theirRP) {
+                    this.state.formats.sheet1.zopa = {
+                        exists: true,
+                        range: [yourRP, theirRP],
+                    };
+                    this.elements.zopaDisplay.innerHTML = `<span class="value-updated" style="color: var(--color-accent-success)">$${yourRP.toLocaleString()} - $${theirRP.toLocaleString()}</span>`;
+                } else {
+                    this.state.formats.sheet1.zopa = { exists: false, range: null };
+                    this.elements.zopaDisplay.innerHTML = `<span style="color: var(--color-accent-danger)">No ZOPA (negative zone)</span>`;
+                }
+                return;
+            }
+        }
+
+        this.elements.zopaDisplay.innerHTML = `<span class="value-placeholder">Calculating...</span>`;
+    }
+
+    extractNumber(value) {
+        if (!value) return null;
+        const match = value.toString().replace(/[,$]/g, '').match(/\d+/);
+        return match ? parseInt(match[0]) : null;
+    }
+
+    /**
+     * Add a new proposal to Sheet 2
+     */
+    addProposal(party, values) {
+        const proposal = {
+            id: Date.now(),
+            party: party,
+            timestamp: new Date().toLocaleTimeString(),
+            values: values, // { variable: value }
+        };
+
+        this.state.formats.sheet2.proposals.push(proposal);
+
+        // Auto-discover variables
+        Object.keys(values).forEach(variable => {
+            if (!this.state.formats.sheet2.variables.find(v => v.name === variable)) {
+                this.state.formats.sheet2.variables.push({
+                    name: variable,
+                    ideal: null,
+                    dynamic: true,
+                });
+            }
+        });
+
+        this.renderSheet2();
+    }
+
+    updateSheet2(variable, value, party) {
+        // This now adds to the latest proposal or creates a new one
+        const proposals = this.state.formats.sheet2.proposals;
+        const lastProposal = proposals[proposals.length - 1];
+
+        // If no proposal exists or party changed, create new proposal
+        if (!lastProposal || lastProposal.party !== party) {
+            this.addProposal(party, { [variable]: value });
+        } else {
+            // Update existing proposal
+            lastProposal.values[variable] = value;
+            this.renderSheet2();
+        }
+    }
+
+    renderSheet2() {
+        const { variables, proposals } = this.state.formats.sheet2;
+
+        // Update info
+        this.elements.proposalCount.textContent = proposals.length;
+        this.elements.variableCount.textContent = variables.length;
+
+        if (variables.length === 0 || proposals.length === 0) {
+            this.elements.sheet2Head.innerHTML = `
+                <tr>
+                    <th class="sticky-col">Variable</th>
+                    <th>Ideal</th>
+                </tr>
+            `;
+            this.elements.sheet2Body.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="3">Variables will appear as proposals are made</td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Build header with proposal columns
+        let headerHtml = '<tr><th class="sticky-col">Variable</th><th>Ideal</th>';
+        proposals.forEach((p, i) => {
+            const partyClass = p.party === 'you' ? 'proposal-header__party--you' : 'proposal-header__party--them';
+            const partyLabel = p.party === 'you' ? 'You' : 'Them';
+            headerHtml += `
+                <th class="proposal-header">
+                    <span class="proposal-header__number">P${i + 1}</span>
+                    <span class="proposal-header__party ${partyClass}">${partyLabel}</span>
+                </th>
+            `;
+        });
+        headerHtml += '</tr>';
+        this.elements.sheet2Head.innerHTML = headerHtml;
+
+        // Build body rows
+        let bodyHtml = '';
+        variables.forEach(v => {
+            const dynamicBadge = v.dynamic ? '<span class="dynamic-badge">+</span>' : '';
+            bodyHtml += `<tr><td class="sticky-col var-name">${dynamicBadge} ${v.name}</td><td>${v.ideal || '?'}</td>`;
+
+            // Track values to detect agreed (unchanged) values
+            let previousValue = null;
+            let agreedValue = null;
+
+            proposals.forEach((p, i) => {
+                const value = p.values[v.name];
+                const displayValue = value || '-';
+
+                // Check if this value is "agreed" (same as previous proposal from other party)
+                let isAgreed = false;
+                if (i > 0 && value && previousValue && value === previousValue) {
+                    isAgreed = true;
+                    agreedValue = value;
+                }
+
+                // If we've agreed and this value matches the agreed value, show as agreed
+                if (agreedValue && value === agreedValue) {
+                    isAgreed = true;
+                }
+
+                const agreedClass = isAgreed ? 'cell-agreed' : '';
+                const partyClass = p.party === 'you' ? 'col-you' : 'col-them';
+
+                bodyHtml += `<td class="${partyClass} ${agreedClass}">${displayValue}</td>`;
+                previousValue = value;
+            });
+
+            bodyHtml += '</tr>';
+        });
+
+        this.elements.sheet2Body.innerHTML = bodyHtml;
+    }
+
+    updateSheet3(variable, data, party) {
+        let varData = this.state.formats.sheet3.variables.find(v => v.name === variable);
+        if (!varData) {
+            varData = {
+                name: variable,
+                you: { startingPoint: null, margin: null, impact: null },
+                them: { startingPoint: null, margin: null, impact: null },
+            };
+            this.state.formats.sheet3.variables.push(varData);
+        }
+
+        if (party && data) {
+            Object.assign(varData[party], data);
+        }
+
+        this.renderSheet3();
+    }
+
+    renderSheet3() {
+        const { variables } = this.state.formats.sheet3;
+
+        if (variables.length === 0) {
+            this.elements.sheet3Body.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6">Trade-off data will appear as negotiation progresses</td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        variables.forEach(v => {
+            html += `
+                <tr>
+                    <td class="col-you">${v.you.startingPoint || '?'}</td>
+                    <td class="col-you">${v.you.margin || '?'}</td>
+                    <td class="col-you">${this.renderImpactBar(v.you.impact, 'you')}</td>
+                    <td class="var-name">${v.name}</td>
+                    <td class="col-them">${this.renderImpactBar(v.them.impact, 'them')}</td>
+                    <td class="col-them">${v.them.margin || '?'}</td>
+                </tr>
+            `;
+        });
+
+        this.elements.sheet3Body.innerHTML = html;
+    }
+
+    renderImpactBar(value, party) {
+        if (!value) return '?';
+        const filled = Math.min(10, Math.max(0, value));
+        let html = '<div class="impact-bar">';
+        for (let i = 0; i < 10; i++) {
+            const filledClass = i < filled ? 'impact-bar__segment--filled' : '';
+            const partyClass = party === 'them' ? 'col-them' : '';
+            html += `<div class="impact-bar__segment ${filledClass} ${partyClass}"></div>`;
+        }
+        html += `</div><small>${value}</small>`;
+        return html;
+    }
+
+    updateSheet4(field, value) {
+        const sheet4 = this.state.formats.sheet4;
+
+        switch (field) {
+            case 'problem':
+                sheet4.problem = value;
+                this.elements.fisherProblem.innerHTML = value;
+                break;
+            case 'actor':
+                if (!sheet4.actors.includes(value)) {
+                    sheet4.actors.push(value);
+                    this.renderList(this.elements.fisherActors, sheet4.actors);
+                }
+                break;
+            case 'yourInterest':
+                if (!sheet4.interests.you.includes(value)) {
+                    sheet4.interests.you.push(value);
+                    this.renderList(this.elements.fisherYourInterests, sheet4.interests.you);
+                }
+                break;
+            case 'theirInterest':
+                if (!sheet4.interests.them.includes(value)) {
+                    sheet4.interests.them.push(value);
+                    this.renderList(this.elements.fisherTheirInterests, sheet4.interests.them);
+                }
+                break;
+            case 'option':
+                if (!sheet4.options.includes(value)) {
+                    sheet4.options.push(value);
+                    this.renderList(this.elements.fisherOptions, sheet4.options, true);
+                }
+                break;
+            case 'criteria':
+                if (!sheet4.criteria.includes(value)) {
+                    sheet4.criteria.push(value);
+                    this.renderList(this.elements.fisherCriteria, sheet4.criteria);
+                }
+                break;
+            case 'yourBatna':
+                sheet4.batna.you = value;
+                this.elements.fisherYourBatna.innerHTML = value;
+                break;
+            case 'theirBatna':
+                sheet4.batna.them = value;
+                this.elements.fisherTheirBatna.innerHTML = value;
+                break;
+        }
+    }
+
+    renderList(element, items, numbered = false) {
+        if (items.length === 0) {
+            element.innerHTML = `<li class="value-placeholder">None detected yet...</li>`;
+            return;
+        }
+        element.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+    }
+
+    addVariable(variable, sheet) {
+        if (sheet === 2) {
+            const exists = this.state.formats.sheet2.variables.find(v => v.name === variable);
+            if (!exists) {
+                this.state.formats.sheet2.variables.push({
+                    name: variable,
+                    ideal: null,
+                    dynamic: true,
+                    rounds: [],
+                });
+                this.renderSheet2();
+            }
+        }
+    }
+
+    startNewRound(round) {
+        this.state.formats.sheet2.currentRound = round;
+        this.renderSheet2();
+    }
+
+    /**
+     * Real-time Analysis Streaming
+     */
+    startAnalysis(pattern, speaker) {
+        // Clear previous streaming content
+        this.currentAnalysisElement = null;
+
+        // Update last updated time
+        this.state.analysis.lastUpdated = new Date();
+        this.elements.analysisLastUpdated.textContent = `Analyzing...`;
+
+        // Create streaming insight in the insights list
+        const patternLabel = pattern.charAt(0).toUpperCase() + pattern.slice(1);
+        const speakerLabel = speaker === 'You' || speaker === 'you' ? 'You' : 'Them';
+
+        const insightEl = document.createElement('div');
+        insightEl.className = 'insight-item insight-item--streaming';
+        insightEl.innerHTML = `
+            <div class="insight-item__header">
+                <span class="insight-item__pattern">${patternLabel}</span>
+                <span class="insight-item__speaker">Re: ${speakerLabel}</span>
+            </div>
+            <div class="insight-item__content"></div>
+        `;
+
+        // Clear empty state if present
+        const emptyState = this.elements.insightsList.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        // Insert at top
+        this.elements.insightsList.insertBefore(insightEl, this.elements.insightsList.firstChild);
+        this.currentAnalysisElement = insightEl.querySelector('.insight-item__content');
+    }
+
+    appendAnalysisChunk(chunk) {
+        if (this.currentAnalysisElement) {
+            this.currentAnalysisElement.textContent += chunk;
+            // Auto-scroll the analysis panel
+            this.elements.insightsList.scrollTop = 0;
+        }
+    }
+
+    completeAnalysis(fullResponse) {
+        if (this.currentAnalysisElement) {
+            const parent = this.currentAnalysisElement.closest('.insight-item');
+            if (parent) {
+                parent.classList.remove('insight-item--streaming');
+            }
+        }
+        this.currentAnalysisElement = null;
+
+        // Update timestamp
+        this.elements.analysisLastUpdated.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+
+        // Keep only last 10 insights
+        const insights = this.elements.insightsList.querySelectorAll('.insight-item');
+        if (insights.length > 10) {
+            for (let i = 10; i < insights.length; i++) {
+                insights[i].remove();
+            }
+        }
+    }
+
+    /**
+     * Analysis Updates
+     */
+    updateAnalysis(suggestions, insights, warnings, formatInsights) {
+        this.state.analysis.suggestions = suggestions || [];
+        this.state.analysis.insights = insights || [];
+        this.state.analysis.warnings = warnings || [];
+        if (formatInsights) {
+            this.state.analysis.formatInsights = formatInsights;
+        }
+        this.state.analysis.lastUpdated = new Date();
+
+        // Update last updated time
+        this.elements.analysisLastUpdated.textContent = `Updated: ${this.state.analysis.lastUpdated.toLocaleTimeString()}`;
+
+        // Render suggestions
+        if (suggestions && suggestions.length > 0) {
+            this.elements.suggestionsList.innerHTML = suggestions.map(s => `
+                <div class="suggestion-item">
+                    <div class="suggestion-item__question">"${s.question}"</div>
+                    <div class="suggestion-item__purpose">→ ${s.purpose}</div>
+                </div>
+            `).join('');
+        }
+
+        // Render insights
+        if (insights && insights.length > 0) {
+            this.elements.insightsList.innerHTML = insights.map(i => `
+                <div class="insight-item">${i.text}</div>
+            `).join('');
+        }
+
+        // Render warnings
+        if (warnings && warnings.length > 0) {
+            this.elements.warningsList.innerHTML = warnings.map(w => `
+                <div class="warning-item ${w.severity === 'moderate' ? 'warning-item--moderate' : ''}">${w.text}</div>
+            `).join('');
+        }
+
+        // Render format insights
+        if (formatInsights && formatInsights.length > 0) {
+            this.renderFormatInsights(formatInsights);
+        }
+    }
+
+    /**
+     * Add a format insight suggestion
+     */
+    addFormatInsight(insight) {
+        this.state.analysis.formatInsights.push(insight);
+        this.renderFormatInsights(this.state.analysis.formatInsights);
+    }
+
+    /**
+     * Get format name by sheet number
+     */
+    getFormatName(sheet) {
+        const formatNames = {
+            1: 'Distributive Analysis',
+            2: 'Proposal Tracker',
+            3: 'Trade-off Analysis',
+            4: 'Fisher Integrative'
+        };
+        return formatNames[sheet] || `Sheet ${sheet}`;
+    }
+
+    /**
+     * Render format insights with action buttons
+     */
+    renderFormatInsights(insights) {
+        if (!insights || insights.length === 0) {
+            this.elements.formatInsightsList.innerHTML = `
+                <div class="empty-state empty-state--small">
+                    <div class="empty-state__text">Format suggestions will appear here</div>
+                </div>
+            `;
+            return;
+        }
+
+        this.elements.formatInsightsList.innerHTML = insights.map((insight, index) => {
+            // Handle single sheet or multiple sheets
+            const sheets = Array.isArray(insight.sheet) ? insight.sheet : [insight.sheet];
+            const formatBadges = sheets.map(s =>
+                `<span class="format-insight-item__format" data-sheet="${s}" onclick="app.switchSheet(${s})" title="Click to view ${this.getFormatName(s)}">
+                    <span class="format-insight-item__format-num">${s}</span>
+                    ${this.getFormatName(s)}
+                </span>`
+            ).join('');
+
+            return `
+            <div class="format-insight-item" data-index="${index}">
+                <div class="format-insight-item__header">
+                    <span class="format-insight-item__type">
+                        ${insight.type === 'add' ? '➕ Add' : '✏️ Modify'}
+                    </span>
+                </div>
+                <div class="format-insight-item__formats">
+                    <span class="format-insight-item__formats-label">Affects:</span>
+                    ${formatBadges}
+                </div>
+                <div class="format-insight-item__content">
+                    ${insight.type === 'add'
+                        ? `Add <span class="format-insight-item__field">${insight.field}</span>: <span class="format-insight-item__value">${insight.value}</span>`
+                        : `Update <span class="format-insight-item__field">${insight.field}</span> from <span class="format-insight-item__value">${insight.oldValue || '?'}</span> to <span class="format-insight-item__value">${insight.value}</span>`
+                    }
+                    ${insight.party ? `<br><small style="color: var(--color-text-muted);">Party: <strong>${insight.party === 'you' ? 'You' : 'Them'}</strong></small>` : ''}
+                    ${insight.reason ? `<br><small style="color: var(--color-text-muted);">Reason: ${insight.reason}</small>` : ''}
+                </div>
+                <div class="format-insight-item__actions">
+                    <button class="btn btn--accept" onclick="app.acceptFormatInsight(${index})">✓ Accept</button>
+                    <button class="btn btn--reject" onclick="app.rejectFormatInsight(${index})">✗ Reject</button>
+                    <button class="btn btn--comment" onclick="app.toggleCommentBox(${index})">💬 Comment</button>
+                </div>
+                <div class="format-insight-item__comment-box" id="commentBox-${index}">
+                    <textarea class="format-insight-item__comment-input" id="commentInput-${index}"
+                        placeholder="Add context or clarification for the AI..."></textarea>
+                    <button class="btn btn--primary format-insight-item__comment-submit"
+                        onclick="app.submitComment(${index})">Submit for Review</button>
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    /**
+     * Accept a format insight - apply the change
+     */
+    acceptFormatInsight(index) {
+        const insight = this.state.analysis.formatInsights[index];
+        if (!insight) return;
+
+        // Apply the change to the appropriate sheet
+        this.applyFormatInsight(insight);
+
+        // Remove from list
+        this.state.analysis.formatInsights.splice(index, 1);
+        this.renderFormatInsights(this.state.analysis.formatInsights);
+
+        // Send acceptance to server for learning
+        this.send({
+            type: 'format_insight_response',
+            action: 'accept',
+            insight: insight,
+        });
+    }
+
+    /**
+     * Reject a format insight
+     */
+    rejectFormatInsight(index) {
+        const insight = this.state.analysis.formatInsights[index];
+        if (!insight) return;
+
+        // Remove from list
+        this.state.analysis.formatInsights.splice(index, 1);
+        this.renderFormatInsights(this.state.analysis.formatInsights);
+
+        // Send rejection to server for learning
+        this.send({
+            type: 'format_insight_response',
+            action: 'reject',
+            insight: insight,
+        });
+    }
+
+    /**
+     * Toggle comment box visibility
+     */
+    toggleCommentBox(index) {
+        const commentBox = document.getElementById(`commentBox-${index}`);
+        if (commentBox) {
+            commentBox.classList.toggle('visible');
+            if (commentBox.classList.contains('visible')) {
+                document.getElementById(`commentInput-${index}`).focus();
+            }
+        }
+    }
+
+    /**
+     * Submit comment for AI to analyze before applying
+     */
+    submitComment(index) {
+        const insight = this.state.analysis.formatInsights[index];
+        const comment = document.getElementById(`commentInput-${index}`).value.trim();
+        if (!insight || !comment) return;
+
+        // Send to server for AI to analyze with user's comment
+        this.send({
+            type: 'format_insight_response',
+            action: 'comment',
+            insight: insight,
+            comment: comment,
+        });
+
+        // Update UI to show pending
+        const item = document.querySelector(`[data-index="${index}"]`);
+        if (item) {
+            item.style.opacity = '0.6';
+            item.querySelector('.format-insight-item__actions').innerHTML = `
+                <span style="color: var(--color-text-muted); font-size: var(--text-xs);">⏳ AI is analyzing your feedback...</span>
+            `;
+        }
+    }
+
+    /**
+     * Apply a format insight to the appropriate sheet(s)
+     */
+    applyFormatInsight(insight) {
+        // Handle single sheet or multiple sheets
+        const sheets = Array.isArray(insight.sheet) ? insight.sheet : [insight.sheet];
+
+        sheets.forEach(sheet => {
+            switch (sheet) {
+                case 1:
+                    this.updateSheet1(insight.field, insight.value, insight.party);
+                    break;
+                case 2:
+                    if (insight.party) {
+                        this.updateSheet2(insight.field, insight.value, insight.party);
+                    }
+                    break;
+                case 3:
+                    // For Sheet 3, add variable if it doesn't exist
+                    this.updateSheet3(insight.field, {
+                        startingPoint: insight.value,
+                        margin: null,
+                        impact: null
+                    }, insight.party);
+                    break;
+                case 4:
+                    this.updateSheet4(insight.field, insight.value);
+                    break;
+            }
+        });
+    }
+
+    /**
+     * Manual Analysis
+     */
+    handleManualAnalyze() {
+        const text = this.elements.manualInput.value.trim();
+        if (!text) return;
+
+        // Add to transcript
+        this.addTranscript({
+            id: Date.now().toString(),
+            timestamp: new Date().toLocaleTimeString(),
+            speaker: 'you',
+            speakerLabel: 'You (Manual)',
+            text: text,
+        });
+
+        // Send for analysis
+        this.send({
+            type: 'manual_analyze',
+            text: text,
+        });
+
+        this.elements.manualInput.value = '';
+    }
+
+    /**
+     * Export Transcript
+     */
+    exportTranscript() {
+        const content = this.state.transcript.map(s =>
+            `[${s.timestamp}] ${s.speakerLabel}: ${s.text}`
+        ).join('\n');
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `negotiation-transcript-${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Load Demo Data
+     */
+    loadDemoData() {
+        // Demo transcript entries
+        const demoTranscript = [
+            { speaker: 'you', label: 'You (Seller)', text: "We're offering $55,000 for the full software package including support." },
+            { speaker: 'them', label: 'Buyer', text: "That's higher than we expected. We were thinking more around $45,000." },
+            { speaker: 'you', label: 'You (Seller)', text: "I understand your budget concerns. What if we included extended warranty coverage?" },
+            { speaker: 'them', label: 'Buyer', text: "Tell me more about the warranty options. We need at least 2 years coverage." },
+        ];
+
+        demoTranscript.forEach((item, i) => {
+            setTimeout(() => {
+                this.addTranscript({
+                    id: `demo-${i}`,
+                    timestamp: new Date(Date.now() - (4 - i) * 30000).toLocaleTimeString(),
+                    speaker: item.speaker,
+                    speakerLabel: item.label,
+                    text: item.text,
+                });
+            }, i * 100);
+        });
+
+        // Demo Sheet 1 data
+        setTimeout(() => {
+            this.updateSheet1('initialProposal', '$55,000', 'you');
+            this.updateSheet1('initialProposal', '$45,000', 'them');
+            this.updateSheet1('targetPoint', '$60,000', 'you');
+            this.updateSheet1('resistancePoint', '$48,000', 'you');
+            this.updateSheet1('batna', 'Other buyer at $52K', 'you');
+        }, 500);
+
+        // Demo Sheet 2 data - Proposal Tracker
+        setTimeout(() => {
+            this.state.formats.sheet2.variables = [
+                { name: 'Price', ideal: '$60K', dynamic: false },
+                { name: 'Warranty', ideal: '3yr', dynamic: false },
+                { name: 'Delivery', ideal: '30d', dynamic: false },
+                { name: 'Training', ideal: null, dynamic: true },
+            ];
+            this.state.formats.sheet2.proposals = [
+                { id: 1, party: 'you', timestamp: '14:30:15', values: { 'Price': '$55K', 'Warranty': '2yr', 'Delivery': '45d' } },
+                { id: 2, party: 'them', timestamp: '14:31:02', values: { 'Price': '$45K', 'Warranty': '3yr', 'Delivery': '30d' } },
+                { id: 3, party: 'you', timestamp: '14:32:45', values: { 'Price': '$52K', 'Warranty': '2.5yr', 'Delivery': '40d', 'Training': '20hrs' } },
+                { id: 4, party: 'them', timestamp: '14:33:30', values: { 'Price': '$48K', 'Warranty': '2.5yr', 'Delivery': '35d', 'Training': '40hrs' } },
+            ];
+            this.renderSheet2();
+        }, 600);
+
+        // Demo Sheet 3 data
+        setTimeout(() => {
+            this.state.formats.sheet3.variables = [
+                { name: 'Price', you: { startingPoint: '$55K', margin: '$7K', impact: 8 }, them: { startingPoint: '$45K', margin: '?', impact: 10 } },
+                { name: 'Warranty', you: { startingPoint: '2yr', margin: '+1yr', impact: 3 }, them: { startingPoint: '3yr', margin: '?', impact: 7 } },
+                { name: 'Delivery', you: { startingPoint: '45d', margin: '-15d', impact: 2 }, them: { startingPoint: '30d', margin: '?', impact: 9 } },
+            ];
+            this.renderSheet3();
+            this.elements.tradeoffSuggestion.textContent = 'Trade-off Opportunity: Concede on Delivery (low impact) to gain on Price (high impact). They seem to prioritize delivery time.';
+        }, 700);
+
+        // Demo Sheet 4 data
+        setTimeout(() => {
+            this.updateSheet4('problem', '"How to establish fair pricing for software license while meeting both parties\' budget and value needs"');
+            this.updateSheet4('actor', 'You (Sales Representative)');
+            this.updateSheet4('actor', 'Buyer (Procurement Manager)');
+            this.updateSheet4('actor', 'Buyer\'s IT Team');
+            this.updateSheet4('yourInterest', 'Profitable deal closure');
+            this.updateSheet4('yourInterest', 'Quick close before Q4');
+            this.updateSheet4('yourInterest', 'Long-term customer relationship');
+            this.updateSheet4('theirInterest', 'Stay within budget');
+            this.updateSheet4('theirInterest', 'Reliable support coverage');
+            this.updateSheet4('theirInterest', 'Easy implementation');
+            this.updateSheet4('option', 'Phased payment plan');
+            this.updateSheet4('option', 'Reduced scope + expansion option');
+            this.updateSheet4('option', 'Extended warranty in exchange for higher price');
+            this.updateSheet4('criteria', 'Market rate: $50K-$65K for similar software');
+            this.updateSheet4('criteria', 'Industry standard warranty: 2 years');
+            this.updateSheet4('yourBatna', 'Another buyer interested at $52K<br><small>Strength: MEDIUM</small>');
+            this.updateSheet4('theirBatna', '<span class="value-placeholder">Unknown - probe for this</span>');
+        }, 800);
+
+        // Demo Analysis data
+        setTimeout(() => {
+            this.updateAnalysis(
+                [
+                    { question: "What's driving your $45K target?", purpose: "Uncover underlying interests" },
+                    { question: "If we included training, would that change your budget?", purpose: "Test trade-off willingness" },
+                    { question: "What's your timeline for this decision?", purpose: "Assess urgency" },
+                ],
+                [
+                    { text: "Gap: $4K between latest positions ($52K vs $48K)" },
+                    { text: "ZOPA likely exists" },
+                    { text: "Warranty agreed at 2.5yr" },
+                ],
+                [
+                    { text: "Their resistance point not yet established", severity: "moderate" },
+                    { text: "No BATNA mentioned by other party", severity: "moderate" },
+                ],
+                // Format Insights demo
+                [
+                    {
+                        type: 'add',
+                        sheet: 1,
+                        party: 'them',
+                        field: 'targetPoint',
+                        value: '$46,000',
+                        reason: 'Buyer mentioned "ideally around 46" in last statement'
+                    },
+                    {
+                        type: 'add',
+                        sheet: [2, 3],  // Affects multiple formats
+                        party: 'them',
+                        field: 'Support',
+                        value: '24/7',
+                        reason: 'New variable mentioned: "we need 24/7 support coverage"'
+                    },
+                    {
+                        type: 'modify',
+                        sheet: 4,
+                        field: 'theirInterest',
+                        oldValue: null,
+                        value: 'Quick implementation (before Q2)',
+                        reason: 'Detected timeline pressure in conversation'
+                    },
+                    {
+                        type: 'add',
+                        sheet: [1, 3],
+                        party: 'you',
+                        field: 'resistancePoint',
+                        value: '$47,000',
+                        reason: 'You said "we can\'t go below 47 under any circumstances"'
+                    }
+                ]
+            );
+        }, 900);
+    }
+
+    /**
+     * Escape HTML
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+/**
+ * Initialize application
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new NegotiationAI();
+});
+
+    </script>
 </body>
 </html>
